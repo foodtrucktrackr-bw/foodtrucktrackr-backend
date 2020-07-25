@@ -121,11 +121,12 @@
 ## Photos
 | Request Type | Endpoint                       | Description             |
 |:------------:|:------------------------------:|:-----------------------:|
-| GET          | api/note/:strain_id            | Get All Strain Notes     |
-| GET          | api/note/:strain_id/:note_id   | Get Specific Strain Note |
-| POST         | api/note/:strain_id            | Add Note For Strain      |
-| PATCH        | api/note/:strain_id/:note_id   | Update Note Information  |
-| DELETE       | api/note/:strain_id/:note_id   | Remove Strain Note       |
+| GET          | api/photo/truck/:id            | Get Truck Photo         |
+| GET          | api/photo/menu/:id/item/:id    | Get Menu Item Photo     |
+| POST         | api/photo/truck/:id            | Add Truck Photo         |
+| POST         | api/photo/menu/:id/item/:id    | Add Menu Item Photo     |
+| DELETE       | api/photo/truck/:id            | Delete Truck Photo      |
+| DELETE       | api/photo/menu/:id/item/:id    | Delete Menu Item Photo  |
 
 ## Promotions
 | Request Type | Endpoint                       | Description             |
