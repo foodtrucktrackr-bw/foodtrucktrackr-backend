@@ -1,4 +1,4 @@
-menexports.up = function(knex) {
+exports.up = function(knex) {
     return knex.schema
     .createTable('menus', table => {
         table.increments('menu_id');
