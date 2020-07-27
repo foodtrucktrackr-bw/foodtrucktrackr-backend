@@ -5,6 +5,13 @@ const models = require('../models/users');
 const jwt = require('jsonwebtoken');
 const authCheck = require('../../api/auth');
 
+// Get All Users
+router.get('/', (req, res, next) => {
+
+    console.log('GET All Users Endpoint');
+    res.status(200).json(res.data);
+});
+
 router.post('/login', async (req, res) => {
     const secret = process.env.JWT_SECRET;
     const userName = req.body.userName;

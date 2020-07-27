@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-// const userRoutes = require('../data/controllers/userController');
+const userRoutes = require('../data/controllers/userController');
 const truckRoutes = require('../data/controllers/truckController');
 const morgan = require('morgan');
 
@@ -18,7 +18,7 @@ server.use(helmet());
 server.use(cors());
 server.use(express.json());
 
-// server.use('/users', userRoutes);
+server.use('/api/users', userRoutes);
 server.use('/api/trucks', truckRoutes);
 
 server.get("/api", (req, res) => {

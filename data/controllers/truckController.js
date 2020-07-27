@@ -1,23 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const {QueryTypes} = require('sequelize');
+const db = require('../connection');
 const models= require('../models/trucks');
+const { permittedCrossDomainPolicies } = require('helmet');
 
 // Get All Trucks
-router.get('/', async (req, res) => {
+router.get('/', (req, res, next) => {
 
-    try {
-        console.log('Trucks Endpoint');
-        const trucks = await models.Truck.findAll();
-        console.log(trucks.every(truck => truck instanceof Truck)); // true
-        console.log("All trucks:", JSON.stringify(trucks, null, 2));
-    } catch (err) {
-        logger.error(err);
-        res.status(401);
-        return res.send({
-            error: 'Invalid username or password'
-        });
-    }});
+    console.log('Trucks Endpoint');
+    res.status(200).json(res.data);
+
+    // const result = await db.models.trucks;
+    // console.log(`=========${res}/n${req}=========`);
+
+    // try {
+    //     return result;
+    // } catch (err) {
+    //     res.status(500).json({message: 'Something went wrong.'})
+    // }
+
+});
 
 //  // Add New Truck
 // router.post('/truck:id', async (req, res) => {
