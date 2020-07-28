@@ -39,12 +39,12 @@ server.post('/user',(req,res) => {
 
 
 server.post('/user/auth/login',(req,res) => {
-  const required = ['username', 'password']
+  const required = ['user_email', 'password']
   for(requiredField of required) {
     if(!req.body[requiredField]) return res.status(400).json({error: "Required Fields"})
   }
-  const user = users.find(x => x.username.toLowerCase() === req.body.username.toLowerCase())
-  if(!user) return res.status(400).json({error: "No user with that username"})
+  const user = users.find(x => x.user_email.toLowerCase() === req.body.user_email.toLowerCase())
+  if(!user) return res.status(400).json({error: "No user with that email"})
   if(user.password !== req.body.password)
     return res.status(401).json({error: "You shall not pass"})
   return res.status(201).json({token: "TOKEN", id: user.id})
