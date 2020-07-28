@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const {users, trucks} = require('./data')
+const {users, trucks, favorite_trucks} = require('./data')
 const PORT = process.env.PORT || 5000;
 const server = express();
 let userID = 3;
@@ -54,6 +54,13 @@ server.get('/user/:id', (req,res) => {
   const {id} = req.params;
   const user = users.find(x => x.id === +id)
   if(!user) return res.status(404).json({error: "No user found with that id"})
+  if(user.user_role.toLowerCase() === "operator")
+    user.ownedTrucks = trucks.filter(x => x.user_id === user.id)
+  if(user.user_role.toLowerCase() === "diner"){
+    const favoritesID = new Set(favorite_trucks.filter(x => x.user_id === user.id).map(x => x.truck_id))
+    const favoriteTrucks = trucks.filter(x => favoritesID.has(x.id))
+    user.favoriteTrucks = favoriteTrucks
+  }
   delete user.password
   return res.status(200).json(user)
 })
@@ -66,7 +73,7 @@ const checkForToken = (req,res,next) => {
 server.use(checkForToken)
 
 server.get('/trucks',(req,res) => {
-  const {location, cuisine} = req.query;
+  const {location, cuisine, operator} = req.query;
   let returningTrucks = [...trucks]
   if(location)
     returningTrucks = returningTrucks.filter(x => x.location_city.toLowerCase() === location || x.location_zip_code.toLowerCase() === location)
@@ -88,6 +95,15 @@ server.get('/trucks',(req,res) => {
     return true
   })
   return res.status(200).json(returningTrucks)
+})
+
+server.get("/trucks/operator/:id",(req,res) => {
+  const {id} = req.params
+  const user = users.find(x => x.id === +id)
+  if(!user) return res.status(404).json({error: "No user found with that id"})
+  if(user.user_role.toLowerCase() !== "operator") return res.status(401).json({error: "User ID must be from an operator and not a diner"})
+  const returningTrucks = trucks.filter(x => x.user_id === user.id)
+  return res.status(200).json(returningTrucks) 
 })
 
 server.get('/trucks/:id', (req, res) => {
