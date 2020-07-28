@@ -2,11 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const {users, trucks, favorite_trucks} = require('./data')
+const {users, trucks, favorite_trucks, food_items, truck_ratings} = require('./data')
 const PORT = process.env.PORT || 5000;
 const server = express();
 let userID = 3;
 let truckID = 3;
+let foodItemID = 
 
 server.use(helmet());
 server.use(cors());
@@ -52,8 +53,9 @@ server.post('/user/auth/login',(req,res) => {
 
 server.get('/user/:id', (req,res) => {
   const {id} = req.params;
-  const user = users.find(x => x.id === +id)
+  let user = users.find(x => x.id === +id)
   if(!user) return res.status(404).json({error: "No user found with that id"})
+  user = {...user}
   if(user.user_role.toLowerCase() === "operator")
     user.ownedTrucks = trucks.filter(x => x.user_id === user.id)
   if(user.user_role.toLowerCase() === "diner"){
@@ -97,8 +99,11 @@ server.get('/trucks',(req,res) => {
   }
       if(operatorId)
         returningTrucks = returningTrucks.filter(x => x.user_id === +operatorId)
-      
-
+  returningTrucks = {...returningTrucks}
+  for(returningTruck of returningTrucks){
+    const foodItems = food_items.filter(x => x.truck_id === returningTruck.id)
+    returningTruck.food_items = foodItems
+  }
   return res.status(200).json(returningTrucks)
 })
 
@@ -116,6 +121,7 @@ server.post("/user/:userID/favorites", (req, res) => {
   favorite_trucks.push({user_id: user.id, truck_id: truck.id})
   return res.status(201).json(truck)
 })
+
 server.delete("/user/:userID/favorites/:truckID", (req, res) => {
   const user = users.find(x => x.id === +req.params.userID)
   if(!user) return res.status(404).json({error: "User does not exists with that id"})
@@ -130,19 +136,72 @@ server.delete("/user/:userID/favorites/:truckID", (req, res) => {
 
 server.get('/trucks/:id', (req, res) => {
   const {id} = req.params;
-  const truck = trucks.find(x => x.id === +id)
+  let truck = trucks.find(x => x.id === +id)
   if(!truck) return res.status(404).json({error: "No truck with that id"})
-
+  const foodItems = food_items.filter(x => x.truck_id === truck.id)
+  truck = {...truck}
+  truck.food_items = foodItems
+  const allRatings = truck_ratings.filter(x => x.truck_id === truck.id)
+  truck.average_rating = allRatings.reduce((acc,current) => acc + current.rating, 0) / allRatings.length
   return res.status(200).json(truck)
 })
 
-// server.post('/trucks', (req,res) => {
-//   const required = ['truck_name' , 'truck_departure_time', 'truck_arrival_time', 'user_id', 'location_zip_code', 'location_city', 'location_address', 'location_state']
-//   for(requiredField of required) {
-//     if(!req.body[requiredField]) return res.status(400).json({error: "Required Fields"})
-//   }
-  
-// })
+/// UNTESTED
+server.post('/trucks', (req,res) => {
+  const required = ['truck_name' , 'truck_departure_time', 'truck_arrival_time', 'user_id', 'location_zip_code', 'location_city', 'location_address', 'location_state']
+  for(requiredField of required) {
+    if(!req.body[requiredField]) return res.status(400).json({error: "Required Fields"})
+  }
+  const owner = users.find(x => x.id === req.body.user_id)
+  if(!owner) return res.status(400).json({error: "Owner not found with that id"})
+  if(owner.user_role.toLowerCase() !== "operator") return res.status(400).json({error: "User id must be from an owner"})
+  trucks.push({...req.body, id: truckID})
+  let addedTruck = trucks.find(x => x.id === truckID)
+  addedTruck = {...addedTruck}
+  addedTruck.average_rating = null
+  truckID++
+  return res.status(201).json(addedTruck)
+})
+
+server.post('/trucks/:truck_id/food', (req,res) => {
+  const required = ['menu_item_name']
+  for(requiredField of required) {
+    if(!req.body[requiredField]) return res.status(400).json({error: "Required Fields"})
+  }
+  const truck = trucks.find(x => x.id === +req.params.truck_id)
+  if(!truck) return res.status(400).json({error: "Truck not found with that id"})
+  food_items.push({...req.body, id: foodItemID})
+  const addedFoodItem = foodItemID.find(x => x.id === foodItemID)
+  foodItemID++
+  return res.status(201).json(addedFoodItem)
+})
+
+// UNTESTED
+server.post('/trucks/:truck_id/rate', (req,res) => {
+  const required = ['user_id', 'rating']
+  for(requiredField of required) {
+    if(!req.body[requiredField]) return res.status(400).json({error: "Required Fields"})
+  }
+  let truck = trucks.find(x => x.id === +req.params.truck_id)
+  if(!truck) return res.status(400).json({error: "Truck not found with that id"})
+  const user = users.find(x => x.id === req.body.user_id)
+  if(!user) return res.status(400).json({error: "User not found with that id"})
+  if(user.id === truck.user_id) return res.status(400).json({error: "Nice try, you are not rating your own truck..."})
+  let currentRating = truck_ratings.find(x => x.user_id === user.id && x.id === truck.id)
+  if(currentRating) {
+    currentRating.rating = req.body.rating
+  }else{
+    truck_ratings.push({...req.body, truck_id: +req.params.truck_id})
+    currentRating = truck_ratings.find(x => x.user_id === user.id && x.id === truck.id)
+  }
+  truck = {...truck}
+  const allRatings = truck_ratings.filter(x => x.truck_id === truck.id)
+  truck.average_rating = allRatings.reduce((acc,current) => acc + current.rating, 0) / allRatings.length
+  truck.user_rating = currentRating.rating
+  return res.status(201).json(truck_ratings)
+})
+
+
 
 
 
