@@ -73,43 +73,66 @@ const checkForToken = (req,res,next) => {
 server.use(checkForToken)
 
 server.get('/trucks',(req,res) => {
-  const {location, cuisine, operator} = req.query;
+  const {location, cuisine, operating, operatorId} = req.query;
   let returningTrucks = [...trucks]
   if(location)
-    returningTrucks = returningTrucks.filter(x => x.location_city.toLowerCase() === location || x.location_zip_code.toLowerCase() === location)
+    returningTrucks = returningTrucks.filter(x => x.location_city.toLowerCase() === location.toLowerCase() || x.location_zip_code.toLowerCase() === location.toLocaleLowerCase())
   if(cuisine)
     returningTrucks = returningTrucks.filter(x => x.truck_cuisine_type.toLowerCase() === cuisine)
+  if(operating === 'true'){
+    const currentDate = new Date()
+    returningTrucks = returningTrucks.filter(x => {
+      const startingHour = x.truck_arrival_time.getHours()
+      const startingMinutes = x.truck_arrival_time.getMinutes()
+      const departingHour = x.truck_departure_time.getHours()
+      const departingMinutes = x.truck_departure_time.getMinutes()
+      const currentHour = currentDate.getHours()
+      const currentMinutes = currentDate.getMinutes()
+      if(currentHour < startingHour || (currentHour === startingHour && currentMinutes < startingMinutes))
+        return false
+      if(currentHour > departingHour || (currentHour === departingHour && currentMinutes > departingMinutes))
+        return false
+      return true
+    })
+  }
+      if(operatorId)
+        returningTrucks = returningTrucks.filter(x => x.user_id === +operatorId)
+      
 
-  const currentDate = new Date()
-  returningTrucks = returningTrucks.filter(x => {
-    const startingHour = x.truck_arrival_time.getHours()
-    const startingMinutes = x.truck_arrival_time.getMinutes()
-    const departingHour = x.truck_departure_time.getHours()
-    const departingMinutes = x.truck_departure_time.getMinutes()
-    const currentHour = currentDate.getHours()
-    const currentMinutes = currentDate.getMinutes()
-    if(currentHour < startingHour || (currentHour === startingHour && currentMinutes < startingMinutes))
-      return false
-    if(currentHour > departingHour || (currentHour === departingHour && currentMinutes > departingMinutes))
-      return false
-    return true
-  })
   return res.status(200).json(returningTrucks)
 })
 
-server.get("/trucks/operator/:id",(req,res) => {
-  const {id} = req.params
-  const user = users.find(x => x.id === +id)
-  if(!user) return res.status(404).json({error: "No user found with that id"})
-  if(user.user_role.toLowerCase() !== "operator") return res.status(401).json({error: "User ID must be from an operator and not a diner"})
-  const returningTrucks = trucks.filter(x => x.user_id === user.id)
-  return res.status(200).json(returningTrucks) 
+server.post("/user/:userID/favorites", (req, res) => {
+  const required = ['truckID']
+  for(requiredField of required) {
+    if(!req.body[requiredField]) return res.status(400).json({error: "Required Fields"})
+  }
+  const user = users.find(x => x.id === +req.params.userID)
+  if(!user) return res.status(404).json({error: "User does not exists with that id"})
+  const truck = trucks.find(x => x.id === req.body.truckID)
+  if(!truck) return res.status(400).json({error: "Truck does not exist with that id"})
+  const favorited = favorite_trucks.find(x => x.user_id === user.id && x.truck_id === truck.id)
+  if(favorited) return res.status(400).json({error: "User already favorited this truck"})
+  favorite_trucks.push({user_id: user.id, truck_id: truck.id})
+  return res.status(201).json(truck)
+})
+server.delete("/user/:userID/favorites/:truckID", (req, res) => {
+  const user = users.find(x => x.id === +req.params.userID)
+  if(!user) return res.status(404).json({error: "User does not exists with that id"})
+  const truck = trucks.find(x => x.id === +req.params.truckID)
+  if(!truck) return res.status(400).json({error: "Truck does not exist with that id"})
+  const favorited_truck = favorite_trucks.find(x => x.truck_id === truck.id && x.user_id === user.id)
+  if(!favorited_truck) return res.status(400).json({error: "User did not have this truck as favorited"})
+  const indexOfFavorited = favorite_trucks.indexOf(favorited_truck)
+  favorite_trucks.splice(indexOfFavorited,1)
+  return res.status(201).json({message: "Unfavorited"})
 })
 
 server.get('/trucks/:id', (req, res) => {
   const {id} = req.params;
   const truck = trucks.find(x => x.id === +id)
   if(!truck) return res.status(404).json({error: "No truck with that id"})
+
   return res.status(200).json(truck)
 })
 
