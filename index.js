@@ -133,7 +133,6 @@ server.get("/trucks", (req, res) => {
   }
   if (operatorId)
     returningTrucks = returningTrucks.filter((x) => x.user_id === +operatorId);
-  returningTrucks = { ...returningTrucks };
   for (returningTruck of returningTrucks) {
     const foodItems = food_items.filter(
       (x) => x.truck_id === returningTruck.id
