@@ -1,30 +1,22 @@
 // Dependencies
 const express = require('express');
+const isAuthed = require('../util/isAuthed');
+const Menu = require('../controllers/menu');
+
 const router = express.Router();
 
 
-// GET All Users
-router.get('/', async (req, res, next) => {
-  try {
-    const tasks = await helpers.find()
-        res.status(200).json(tasks)
-      } catch (err) {
-       next(err)
-    }
-});
+router.get('/truck/:id', isAuthed, Menu);
 
-// INSERT New User
-router.post("/", (req, res) => {
-  if (!req.body.description) {
-    return res.status(400).json({message: 'Error, description is required.'})
-  }
-    helpers.add(req.body)
-      .then((task) => {
-        res.status(201).json(task)
-      })
-      .catch((err) => {
-        res.status(500).json({message: 'Something went wrong', err})
-      })
-})
+router.post('/truck/:id', isAuthed, Menu);
+
+router.patch('/truck/:id',isAuthed,  Menu);
+
+router.post('/truck/:id/item/:id', isAuthed, Menu);
+
+router.patch('/truck/:id/item/:id', isAuthed, Menu);
+
+router.delete('/truck/:id/item/:id', isAuthed, Menu);
+
 
 module.exports = router;

@@ -3,18 +3,10 @@ const express = require('express');
 const router = express.Router();
 const { check, body } = require('express-validator/check');
 
-const db = require('../data/connection');
-const Auth = require('../models/Auth');
 const User = require('../models/user');
 const authController = require('../controllers/auth');
 
-const successMsg = "Success!";
-const errorMsg = "Uh-oh. Something went wrong";
-
-
-router.get('/login', authController.getLogin);
-
-router.get('/register', authController.getSignup);
+const errorMsg = 'Incorrect login. Please try again.'
 
 router.post(
   '/login',

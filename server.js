@@ -1,18 +1,24 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 
 const User = require('./models/User');
 const Truck = require('./models/Truck');
+const Truck_Promotion = require('./models/Truck_Promotion');
+const Promotion = require('./models/Promotion');
 const Location = require('./models/Location');
 const Menu = require('./models/Menu');
+const Photo = require('./models/Photo');
+const Photo_List = require('./models/Photo_List');
+
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const truckRoutes = require('./routes/truck');
+const menuRoutes = require('./routes/menu');
+
 const secret = process.env.SESSION_SECRET;
 
 
@@ -35,9 +41,6 @@ server.use((req, res, next) => {
       .catch(err => console.log(err));
   });
 
-// Log Dev Endpoint Res
-server.use(morgan("dev"));
-
 server.use(helmet());
 server.use(cors());
 server.use(express.json());
@@ -46,20 +49,20 @@ server.use(bodyParser.urlencoded({ extended: false }));
 server.use('/api', authRoutes);
 server.use('/api/user', userRoutes);
 server.use('/api/truck', truckRoutes);
+server.use('/api/menu', menuRoutes);
 
-Truck.hasOne(User);
-Truck.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
 
+Truck.belongsTo(User);
 Truck.hasOne(Menu);
-Menu.belongsTo(Truck);
-User.hasMany(Menu, {through: Favorite})
 
-Photo.belongsToMany(Truck, Menu, User, {through: PhotoList});
+Truck.hasOne(Location);
+User.hasOne(Location);
 
-User.belongsToMany(Location, {through: UserLocation});
-Truck.belongsToMany(Location, {through: UserLocation});
+Photo.belongsToMany(Truck, {through: Photo_List});
+Photo.belongsToMany(Menu, {through: Photo_List});
+Photo.belongsToMany(User, {through: Photo_List});
 
-Truck.hasMany(Promotion, {through: TruckPromotion});
+Truck.belongsToMany(Promotion, {through: Truck_Promotion});
 
 db.sync()
     .then(res => {

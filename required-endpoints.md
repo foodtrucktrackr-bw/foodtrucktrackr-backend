@@ -4,10 +4,10 @@
 [x] signup
 
 ## User
-[] get user by id
+[x] get user by id
 
 ## Truck
-[] search trucks
+[x] search trucks
 [x] get truck by id
 [x] create truck
 [x] Edit truck
@@ -15,10 +15,10 @@
 [x] rate a truck
 
 ## Favorite
-[] favorite truck
-[] unfavorite truck
+[x] favorite truck
+[x] unfavorite truck
 
 ## Menu
-[] create truck menu item (Food)
-[] Edit truck menu item
-[] delete truck menu item
+[x] create truck menu item (Food)
+[x] Edit truck menu item
+[x] delete truck menu item

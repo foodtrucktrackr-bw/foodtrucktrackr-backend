@@ -6,7 +6,7 @@ const Truck = require('../controllers/truck');
 const router = express.Router();
 
 
-router.get('/', isAuthed, Truck);
+router.get('/?query=', isAuthed, Truck);
 
 router.get('/:id', isAuthed, Truck);
 

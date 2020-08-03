@@ -2,17 +2,15 @@ const Sequelize = require('sequelize');
 const connection = require('../data/connection');
 
 // Models
-const Location = connection.define('location', {
+const Truck_Promotion = connection.define('truck_promotion', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
-    location_address: Sequelize.STRING,
-    location_city: Sequelize.STRING,
-    location_state: Sequelize.STRING,
-    location_zip_code: Sequelize.INTEGER
+    promotion_id: Sequelize.INTEGER,
+    truck_id: Sequelize.INTEGER,
 });
 
-module.exports = Location;
+module.exports = Truck_Promotion;

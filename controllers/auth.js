@@ -23,7 +23,7 @@ exports.register = (req, res, next) => {
   const radius_size = req.body.radius_size;
 
   bcrypt
-    .hash(password, 14)
+    .hash(password, 11)
     .then(hashed => {
       const user = new User({
         email: email,
