@@ -1,19 +1,15 @@
+const mysql = require('mysql2');
 const Sequelize = require('sequelize');
 
-const connection = new Sequelize({
-	dialect: 'sqlite',
-	storage: '../data/food_trucks.db3'
-  });
+const dbhost = process.env.DB_HOST || 'localhost';
+const dbname = process.env.DB_NAME || 'db';
+const dbusername = process.env.DB_USERNAME || 'user';
+const dbpassword = process.env.DB_PASSWORD || 'pass';
 
-// Connection Test //
-const dbserver = async () => {
-	try {
-		await connection.authenticate();
-		console.log('Connection has been established successfully.');
-	  } catch (error) {
-		console.error('Unable to connect to the database:', error);
-	  }
-}
-dbserver();
+const connection = new Sequelize(dbname, dbusername, dbpassword,
+	{
+	host: dbhost,
+	dialect: 'mysql'
+});
 
 module.exports = connection;
