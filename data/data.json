@@ -1,0 +1,94 @@
+User.bulkCreate([
+    {
+        first_name: 'John',
+        last_name: 'Smith',
+        username: 'Jonny',
+        password: 'abc123',
+        user_email: '',
+        user_role: 'Owner',
+        user_radius_size: null,
+    },
+    {
+        first_name: 'Suzy',
+        last_name: 'Perkins',
+        username: 'suzyq',
+        password: 'abc123',
+        user_email: 'susieq@gmail.com',
+        user_role: 'Owner',
+        user_radius_size: null,
+    },
+    {
+        first_name: 'Rubber',
+        last_name: 'Duckie',
+        username: 'superhero',
+        password: 'abc123',
+        user_email: 'rduckie',
+        user_role: 'Diner',
+        user_radius_size: 15,
+    },
+    {
+        first_name: 'Harry',
+        last_name: 'Potter',
+        username: 'seaker',
+        password: 'abc123',
+        user_email: 'lightninghead',
+        user_role: 'Diner',
+        user_radius_size: 7,
+    }
+]);
+
+Truck.bulkCreate([
+    {
+        truck_name: 'Flaming Blue',
+        truck_departure_time: 2045,
+        truck_rating: 4,
+        truck_price_range: 2,
+        truck_cuisine_type: 'Dessert',
+        truck_description: 'Fancy desserts with alchol. What could be better?'
+    },
+    {
+        truck_name: 'French Fried',
+        truck_departure_time: 1130,
+        truck_rating: 5,
+        truck_price_range: 3,
+        truck_cuisine_type: 'French',
+        truck_description: 'The best of Franch, fried!'
+    }
+]);
+
+
+Menu.bulkCreate([
+    {
+        menu_truck: 1,
+        menu_promotion: null,
+        menu_item_name: 'Blue Vodka',
+        menu_item_description: 'Top shelf bluberries, flash fired with equally top shelf vodka.',
+        menu_item_price: 10,
+    },
+    {
+        menu_truck: 2,
+        menu_promotion: null,
+        menu_item_name: 'Baguette De Crisp',
+        menu_item_description: 'Soft on the inside, fried golden. Handmade orange butter.',
+        menu_item_price: 15,
+    }
+]);
+
+Location.bulkCreate([
+    {
+        location_latitude: null,
+        location_longitude: null,
+        location_address: '1234 Main St',
+        location_city: 'Irvine',
+        location_state: 'CA',
+        location_zip_code: 92663
+    },
+    {
+        location_latitude: null,
+        location_longitude: null,
+        location_address: '2048 1st St.',
+        location_city: 'Austin',
+        location_state: 'TX',
+        location_zip_code: 78701
+    }
+]);

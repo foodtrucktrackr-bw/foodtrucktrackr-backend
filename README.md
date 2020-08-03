@@ -32,11 +32,11 @@
 ```
 
 ### Locations
-
+#### Note: For ```geography``` type, see https://gisgeography.com/wgs84-world-geodetic-system/
 ```
 {
-    location_latitude:  string
-    location_longitude: string
+    location_latitude:  geography
+    location_longitude: geography
     location_address:   string
     location_city:      string
     location_state:     string
