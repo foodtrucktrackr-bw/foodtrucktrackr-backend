@@ -1,12 +1,20 @@
 // Dependencies
 const express = require('express');
-const isAuthed = require('../util/isAuthed');
+const authed = require('../util/isAuthed');
 const User = require('../controllers/user');
-
 const router = express.Router();
 
-router.get('/', isAuthed, User);
+// Get Single User
+router.get('/:id', authed, (req, res, next) => {
+    User.findById(req.params.id)
+        .then(user => {
+            console.log(user);
+            return user;
+        })
+        .catch ((err) => {
+            res.status(500).json({message: 'Something went wrong.'})
+        })
 
-router.get('/:id', isAuthed, User);
+});
 
 module.exports = router;

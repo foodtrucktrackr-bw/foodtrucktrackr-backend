@@ -1,26 +1,9 @@
 const express = require('express');
 const { validationResult } = require('express-validator/check');
 const router = express.Router();
-const Truck = require('../models/Truck');
+const Menu = require('../models/Menu');
 
-// Get All Trucks
-router.get('/', (req, res, next) => {
-    Truck.findAll()
-        .then(trucks => {
-             console.log(trucks);
-            res.render('api/trucks', {
-                trucks: trucks,
-                pageTitle: 'All Food Trucks',
-                path: '/trucks'
-            })
-        })
-        .catch ((err) => {
-            res.status(500).json({message: 'Something went wrong.'})
-        })
-
-});
-
-// Add New Truck
+// Add New Menu
 router.post('/', (req, res, next) => {
 
     const errors = validationResult(req);

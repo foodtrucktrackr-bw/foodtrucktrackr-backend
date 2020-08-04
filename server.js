@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
-const session = require('express-session');
+const secret = process.env.SESSION_SECRET;
 
 const User = require('./models/User');
 const Truck = require('./models/Truck');
@@ -19,8 +19,6 @@ const userRoutes = require('./routes/user');
 const truckRoutes = require('./routes/truck');
 const menuRoutes = require('./routes/menu');
 
-const secret = process.env.SESSION_SECRET;
-
 
 // DB Server
 const db = require('./data/connection');
@@ -28,29 +26,29 @@ const db = require('./data/connection');
 // Node Server
 const server = express();
 
-// Use Sessions
-server.use((req, res, next) => {
-    if (!req.session.user) {
-      return next();
-    }
-    User.findById(req.session.user.id)
-      .then(user => {
-        req.user = user;
-        next();
-      })
-      .catch(err => console.log(err));
-  });
-
 server.use(helmet());
 server.use(cors());
 server.use(express.json());
 server.use(bodyParser.urlencoded({ extended: false }));
+server.use(bodyParser.json());
 
 server.use('/api', authRoutes);
 server.use('/api/user', userRoutes);
 server.use('/api/truck', truckRoutes);
 server.use('/api/menu', menuRoutes);
 
+// // User Session
+// server.use((req, res) => {
+//   if (!req.session.user) {
+//     return next();
+//   }
+//   User.findById(req.session.user.id)
+//     .then(user => {
+//       req.user = user;
+//       next();
+//     })
+//     .catch(err => console.log(err));
+// });
 
 Truck.belongsTo(User);
 Truck.hasOne(Menu);

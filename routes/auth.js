@@ -11,10 +11,10 @@ const errorMsg = 'Incorrect login. Please try again.'
 router.post(
   '/login',
   [
-    body('email')
-      .isEmail()
-      .withMessage(errorMsg)
-      .normalizeEmail(),
+    body('username')
+      .not().isEmpty()
+      .trim()
+      .withMessage(errorMsg),
     body('password', errorMsg)
       .isLength({ min: 5 })
       .isAlphanumeric()

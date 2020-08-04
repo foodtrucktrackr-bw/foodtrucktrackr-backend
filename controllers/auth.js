@@ -4,9 +4,10 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 const SECRET = process.env.PORT || 5000;
-const errMsg = 'Wrong Credentials! Try again later.';
+const errMsg = 'Out to lunch. Try again later.';
 
 exports.register = (req, res, next) => {
+  console.log(req.headers, req.rawHeaders, req.url, req.method, req.statusCode, req.statusMessage, req.next, req.baseUrl, req.originalUrl, req._parsedUrl, req.params, req.query, )
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed.');

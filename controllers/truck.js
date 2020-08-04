@@ -27,17 +27,7 @@ router.post('/', (req, res, next) => {
 
     if (!errors.isEmpty()) {
         console.log(errors);
-        return res.status(422).render('/edit', {
-            pageTitle: 'Add New Truck',
-            path: '/',
-            truck: {
-                truck_name: truck_name,
-                truck_departure_time: truck_departure_time,
-                truck_rating: truck_rating,
-                truck_price_range: truck_price_range,
-                truck_cuisine_type: truck_cuisine_type,
-                truck_description: truck_description
-            },
+        return res.status(422).render('/', {
             errorMessage: errors.array()[0].msg,
             validationErrors: errors.array()
         })
